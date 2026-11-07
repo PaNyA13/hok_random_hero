@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เกมกาก</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080c14;--card:#0f172a;--bd:#1e293b;--tx:#e2e8f0;--mut:#94a3b8;--gold:#f59e0b;--red:#ef4444;--blue:#3b82f6;--pt:env(safe-area-inset-top,0px);--pb:env(safe-area-inset-bottom,0px);box-sizing:border-box;padding-top:var(--pt);padding-bottom:var(--pb)}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:'Kanit',system-ui,sans-serif;min-height:100%}
+.wrap{max-width:1150px;margin:0 auto;padding:16px}
+h1{font-size:1.4rem;margin:0 0 4px;color:var(--gold)}
+.sub{color:var(--mut);font-size:.8rem;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:16px}
+.hidden{display:none!important}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+input[type=text]{background:#0b1220;border:1px solid #334155;color:var(--tx);border-radius:10px;padding:9px 12px;font:inherit;width:100%}
+input[type=text]:focus{outline:0;border-color:var(--gold)}
+#names{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:12px 0}
+button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:11px 18px;cursor:pointer;transition:.15s}
+button:active{transform:scale(.97)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.gold{background:linear-gradient(90deg,#f59e0b,#fbbf24);color:#111}
+.ghost{background:#1e293b;color:#fcd34d;border:1px solid #f59e0b55}
+.grid{display:grid;grid-template-columns:1fr 340px;gap:16px;margin-top:4px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.slots{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:10px}
+@media(max-width:560px){.slots{grid-template-columns:1fr}}
+.reel{background:#050912;border:2px solid #334155;border-radius:16px;min-height:260px;padding:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;position:relative;overflow:hidden}
+.reel .lbl{position:absolute;top:8px;left:12px;font-size:.65rem;letter-spacing:.12em;color:var(--mut)}
+.reel.spin{border-color:var(--gold);box-shadow:0 0 18px #f59e0b55}
+.reel.spin .val{animation:flick .12s infinite}
+.reel.done{border-color:#10b981;box-shadow:0 0 22px #10b98177}
+.reel.red.done{border-color:var(--red);box-shadow:0 0 26px #ef444488;background:#2a0c10}
+.reel.blue.done{border-color:var(--blue);box-shadow:0 0 26px #3b82f688;background:#0b1a33}
+@keyframes flick{0%{transform:translateY(-6px);opacity:.6}100%{transform:translateY(0);opacity:1}}
+.val{font-size:2.3rem;line-height:1.1;font-weight:800;word-break:break-word}
+.hero-img{width:136px;height:136px;border-radius:16px;object-fit:cover;border:2px solid var(--gold);background:#111827}
+.bar{height:8px;background:#1e293b;border-radius:99px;overflow:hidden;margin:14px 0 6px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f59e0b,#fde047)}
+.phase{font-size:.8rem;color:var(--mut);min-height:1.2em}
+.side h3{margin:0 0 8px;font-size:.95rem}
+.team{margin-bottom:14px}
+.team .hd{font-weight:700;font-size:.85rem;display:flex;justify-content:space-between;margin-bottom:6px}
+.it{display:flex;align-items:center;gap:10px;background:#0b1220;border-radius:10px;padding:6px 8px;margin-bottom:6px;border-left:4px solid}
+.it img{width:50px;height:50px;border-radius:8px;object-fit:cover;background:#111827}
+.it b{display:block;font-size:1.1rem}.it span{font-size:.95rem;color:var(--mut)}
+.it.new{animation:pop .6s}
+@keyframes pop{0%{transform:scale(.8);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+.R .it{border-color:var(--red)}.B .it{border-color:var(--blue)}
+.R .hd{color:#fca5a5}.B .hd{color:#93c5fd}
+.empty{font-size:.75rem;color:#64748b;font-style:italic}
+#snd{background:#1e293b;color:var(--tx);padding:6px 12px;font-size:.75rem}
+.sum-head{text-align:center;margin:6px 0 16px}
+.sum-head h2{margin:0 0 4px;color:var(--gold);font-size:1.6rem}
+.sumteam{margin-bottom:18px;border-radius:18px;overflow:hidden;border:1px solid var(--bd);background:var(--card)}
+.sumhd{display:flex;justify-content:space-between;padding:12px 18px;font-weight:800;font-size:1.1rem;color:#fff}
+.sumteam.R .sumhd{background:#b91c1c}.sumteam.B .sumhd{background:#1d4ed8}
+.sumteam.R{border-color:#ef444466}.sumteam.B{border-color:#3b82f666}
+.cards{padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.pc{background:#0b1220;border:1px solid #334155;border-radius:14px;padding:8px;text-align:center;animation:pop .5s both}
+.pc img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;background:#111827;display:block}
+.pc span.pn{display:block;margin-top:8px;font-size:1.55rem;font-weight:800;line-height:1.1;color:#fff;word-break:break-word}
+.pc b{display:block;margin-top:4px;font-size:1.1rem;line-height:1.1;color:var(--gold);font-weight:600}
+.sum-btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.sel{display:flex;align-items:center;gap:8px;background:#0b1220;border:1px solid #334155;border-radius:10px;padding:4px 8px}
+.sel input[type=checkbox]{width:18px;height:18px;accent-color:#f59e0b;flex:none}
+.sel input[type=text]{border:0;background:transparent;padding:6px 4px}
+.chip{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:99px;border:2px solid;cursor:pointer;font-weight:700;user-select:none}
+.chip.r{border-color:#ef4444;color:#fca5a5}.chip.b{border-color:#3b82f6;color:#93c5fd}
+.chip input{width:18px;height:18px}
+.chip.r input{accent-color:#ef4444}.chip.b input{accent-color:#3b82f6}
+.hint{font-size:.75rem;color:var(--mut);margin-top:-6px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="row" style="justify-content:space-between"><div><h1> เกมกาก</h1><div class="sub">ฮีโร่ <span id="hc">120</span> ตัว · </div></div><button id="snd">🔊 เสียง: เปิด</button></div>
+
+ <section id="setup" class="card">
+  <div class="row"><label>จำนวนผู้เล่น: <b id="nb">6</b></label><input type="range" id="np" min="1" max="10" value="6" style="flex:1;min-width:160px;accent-color:#f59e0b"></div>
+  <div class="hint">ติ๊กเลือกคนที่จะสุ่ม (ไม่ติ๊ก = ไม่เข้าสุ่ม) และเลือกทีมที่จะให้ออก</div>
+  <div id="names"></div>
+  <div class="row" style="margin:4px 0 14px"><b>ทีมที่สุ่ม:</b>
+   <label class="chip r"><input type="checkbox" id="tr" checked> 🔴 ทีมแดง</label>
+   <label class="chip b"><input type="checkbox" id="tb" checked> 🔵 ทีมฟ้า</label></div>
+  <div class="row"><button class="gold" id="go"> เริ่มสุ่มทีละคน</button><button class="ghost" id="goall"> สุ่มทั้งหมดทันที</button></div>
+ </section>
+
+ <section id="stage" class="hidden">
+  <div class="grid">
+   <div class="card">
+    <div class="row" style="justify-content:space-between;margin-bottom:10px"><b id="prog">ผู้เล่น 0 / 0</b><span class="phase" id="phase">กดปุ่มเพื่อเริ่มสุ่ม</span></div>
+    <div class="slots">
+     <div class="reel" id="r1"><span class="lbl">ผู้เล่น</span><div class="val" id="v1">?</div></div>
+     <div class="reel" id="r2"><span class="lbl">ฝั่งทีม</span><div class="val" id="v2">?</div></div>
+     <div class="reel" id="r3"><span class="lbl">ฮีโร่</span><img class="hero-img hidden" id="hi" referrerpolicy="no-referrer" alt=""><div class="val" id="v3">?</div></div>
+    </div>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="row" style="justify-content:space-between;margin-top:12px">
+     <button class="ghost" id="back">⬅ ตั้งค่าใหม่</button>
+     <div class="row"><button class="ghost" id="inst"> สุ่มทั้งหมดทันที</button><button class="gold" id="next"> เริ่มสุ่มคนถัดไป</button></div>
+    </div>
+   </div>
+   <div class="card side">
+    <h3> ผลการสุ่ม (Real-time)</h3>
+    <div class="team R"><div class="hd"><span>🔴 RED TEAM</span><span id="rc">0</span></div><div id="rl"></div></div>
+    <div class="team B"><div class="hd"><span>🔵 BLUE TEAM</span><span id="bc">0</span></div><div id="bl"></div></div>
+   </div>
+  </div>
+ </section>
+ <section id="summary" class="hidden">
+  <div class="sum-head"><h2>ทีมที่สมดุล</h2><div class="sub">ผลการสุ่มทั้งหมด</div></div>
+  <div class="sumteam R"><div class="sumhd"><span>🔴 RED TEAM</span><span id="sr-n"></span></div><div class="cards" id="sr"></div></div>
+  <div class="sumteam B"><div class="sumhd"><span>🔵 BLUE TEAM</span><span id="sb-n"></span></div><div class="cards" id="sb"></div></div>
+  <div class="sum-btns"><button class="ghost" id="copy"> คัดลอกผลลัพธ์</button><button class="gold" id="again"> เริ่มสุ่มใหม่</button></div>
+ </section>
+</div>
+
+<script>
+const IMG='https://liquipedia.net/commons/images/';
+const HEROES=`Agudo|thumb/f/f8/Agudo_Hero_Icon.jpg/270px-Agudo_Hero_Icon.jpg
+Alessio|thumb/8/87/Ailin_Hero_Icon.png/270px-Ailin_Hero_Icon.png
+Allain|thumb/5/5f/Allain_Hero_Icon.jpg/270px-Allain_Hero_Icon.jpg
+Angela|thumb/5/5a/Angela_Hero_Icon.png/270px-Angela_Hero_Icon.png
+Arke|thumb/5/53/A_Ke_Hero_Icon.png/270px-A_Ke_Hero_Icon.png
+Arthur|thumb/b/b5/Arthur_HOK_Hero_Icon.png/270px-Arthur_HOK_Hero_Icon.png
+Ata|3/35/Ata_Hero_Icon.jpg
+Athena|thumb/4/45/Athena_Hero_Icon.png/270px-Athena_Hero_Icon.png
+Augran|thumb/5/5f/Da_Siming_Hero_Icon.jpg/270px-Da_Siming_Hero_Icon.jpg
+Bai Qi|thumb/f/fb/Bai_Qi_Hero_Icon.png/270px-Bai_Qi_Hero_Icon.png
+Dr Bian|thumb/2/26/Bian_Que_Hero_Icon.png/270px-Bian_Que_Hero_Icon.png
+Biron|thumb/1/12/Kuang_Tie_Hero_Icon.png/270px-Kuang_Tie_Hero_Icon.png
+Butterfly|3/3f/Butterfly_Hero_Icon_2019.png
+Cai Yan|thumb/f/f8/Cai_Wenji_Hero_Icon.png/270px-Cai_Wenji_Hero_Icon.png
+Charlotte|thumb/b/b2/Charlotte_Hero_Icon.jpg/270px-Charlotte_Hero_Icon.jpg
+Chicha|thumb/d/dc/Chi_Cha_Hero_Icon.jpg/270px-Chicha_Hero_Icon.jpg
+Cirrus|thumb/1/1f/Yun_Zhongjun_Hero_Icon.jpg/270px-Yun_Zhongjun_Hero_Icon.jpg
+Consort Yu|thumb/1/14/Yu_Ji_Hero_Icon.png/270px-Yu_Ji_Hero_Icon.png
+Da Qiao|thumb/3/30/Da_Qiao_Hero_Icon.png/270px-Da_Qiao_Hero_Icon.png
+Daji|thumb/3/39/Daji_Hero_Icon.png/270px-Daji_Hero_Icon.png
+Devara|thumb/4/40/Devara_Hero_Icon.png/270px-Devara_Hero_Icon.png
+Dharma|thumb/c/c8/Dharma_Hero_Icon.png/270px-Dharma_Hero_Icon.png
+Di Renjie|thumb/9/94/Di_Renjie_Hero_Icon.png/270px-Di_Renjie_Hero_Icon.png
+Dian Wei|thumb/e/ec/Dian_Wei_Hero_Icon.png/270px-Dian_Wei_Hero_Icon.png
+Diaochan|thumb/a/a9/KOG_Diaochan_Hero_Icon.png/270px-KOG_Diaochan_Hero_Icon.png
+Donghuang|thumb/7/73/East_Emperor_Taiyi_Hero_Icon.png/270px-East_Emperor_Taiyi_Hero_Icon.png
+Dolia|thumb/4/43/Doria_Hero_Icon.jpg/270px-Doria_Hero_Icon.jpg
+Dun|thumb/5/56/Xiahou_Dun_Hero_Icon.png/270px-Xiahou_Dun_Hero_Icon.png
+Erin|thumb/8/87/Ailin_Hero_Icon.png/270px-Ailin_Hero_Icon.png
+Fang|thumb/c/cb/Li_Yuanfang_Hero_Icon.png/270px-Li_Yuanfang_Hero_Icon.png
+Fatih|f/fd/Fatih_Hero_Icon.png
+Feyd|thumb/3/31/Fei_Hero_Icon.jpeg/270px-Fei_Hero_Icon.jpeg
+Flowborn (Assassin)|thumb/7/7b/Flowborn_%28Assassin%29_Hero_Icon.jpg/270px-Flowborn_%28Assassin%29_Hero_Icon.jpg
+Flowborn (Mage)|thumb/8/8c/Child_of_the_Primal_Flow_-_Mage_Hero_Icon_Dec_2024.png/270px-Child_of_the_Primal_Flow_-_Mage_Hero_Icon_Dec_2024.png
+Flowborn (Marksman)|8/83/Child_of_the_Primal_Flow_-_Archer_Hero_Icon.png
+Flowborn (Roamer)|thumb/a/a1/Flowborn_%28Support%29_Hero_Icon.jpg/270px-Flowborn_%28Support%29_Hero_Icon.jpg
+Flowborn (Tank)|thumb/b/b8/Child_of_the_Primal_Flow_-_Tank_Hero_Icon_Dec_2024.png/270px-Child_of_the_Primal_Flow_-_Tank_Hero_Icon_Dec_2024.png
+Fuzi|thumb/7/7b/Lao_Fu_Zi_Hero_Icon.png/270px-Lao_Fu_Zi_Hero_Icon.png
+Gan & Mo|thumb/6/6d/Ganjiang_Moye_Hero_Icon.png/270px-Ganjiang_Moye_Hero_Icon.png
+Gao Changgong|thumb/a/aa/Prince_of_Lanling_2021_Hero_Icon.jpeg/270px-Prince_of_Lanling_2021_Hero_Icon.jpeg
+Gao|thumb/d/db/Gao_Jianli_Hero_Icon.png/270px-Gao_Jianli_Hero_Icon.png
+Garo|thumb/b/b8/Jia_Luo_Hero_Icon.png/270px-Jia_Luo_Hero_Icon.png
+Garuda|e/ea/Garuda_Hero_Icon.png
+Guan Yu|thumb/2/21/Guan_Yu_Hero_Icon.png/270px-Guan_Yu_Hero_Icon.png
+Guiguzi|thumb/b/bd/Gui_Guzi_Hero_Icon.png/270px-Gui_Guzi_Hero_Icon.png
+Han Xin|thumb/a/af/Han_Xin_Hero_Icon.png/270px-Han_Xin_Hero_Icon.png
+Haya|thumb/f/f2/Hai_Yue_Hero_Icon.jpg/270px-Hai_Yue_Hero_Icon.jpg
+Heino|thumb/4/47/Heino_Hero_Icon.jpg/270px-Heino_Hero_Icon.jpg
+Hou Yi|thumb/4/49/Hou_Yi_Hero_Icon.png/270px-Hou_Yi_Hero_Icon.png
+Huang Zhong|thumb/0/0a/Huang_Zhong_Hero_Icon.png/270px-Huang_Zhong_Hero_Icon.png
+Ziya|thumb/3/33/Jiang_Ziya_Hero_Icon_2022.jpg/270px-Jiang_Ziya_Hero_Icon_2022.jpg
+Jing|thumb/6/6f/Jing_HOK_Hero_Icon.jpg/270px-Jing_HOK_Hero_Icon.jpg
+Kaizer|thumb/a/aa/Kai_Hero_Icon.png/270px-Kai_Hero_Icon.png
+Lady Sun|thumb/4/40/Sun_Shangxiang_Hero_Icon.png/270px-Sun_Shangxiang_Hero_Icon.png
+Lady Zhen|thumb/c/c1/Zhen_Ji_2019.jpg/270px-Zhen_Ji_2019.jpg
+Lam|thumb/c/c2/Lan_Hero_Icon.jpg/270px-Lan_Hero_Icon.jpg
+Lapulapu|0/02/Lapulapu_Hero_Icon.png
+Li Bai|thumb/9/9e/Li_Bai_Hero_Icon.png/270px-Li_Bai_Hero_Icon.png
+Li Xin|thumb/4/4d/Li_Xin_Hero_Icon.png/270px-Li_Xin_Hero_Icon.png
+Lian Po|thumb/2/20/Lian_Po_Hero_Icon.png/270px-Lian_Po_Hero_Icon.png
+Liu Bang|thumb/6/67/Liu_Bang_Hero_Icon.png/270px-Liu_Bang_Hero_Icon.png
+Liu Bei|thumb/4/42/Liu_Bei_Hero_Icon.png/270px-Liu_Bei_Hero_Icon.png
+Liu Shan|thumb/7/76/Liu_Shan_Hero_Icon.png/270px-Liu_Shan_Hero_Icon.png
+Ao'yin|thumb/d/d0/Aoyin_Hero_Icon.jpg/270px-Aoyin_Hero_Icon.jpg
+Lu Bu|thumb/2/2f/Lu_Bu_2022_Hero_Icon.png/270px-Lu_Bu_2022_Hero_Icon.png
+Luara|8/82/Luara_Hero_Icon.jpg
+Luban No.7|thumb/3/3a/Luban_No.7_Hero_Icon.png/270px-Luban_No.7_Hero_Icon.png
+Luna|thumb/7/74/Luna_2019.jpg/270px-Luna_2019.jpg
+Mai Shiranui|thumb/1/13/Mai_Shiranui_Hero_Icon.png/270px-Mai_Shiranui_Hero_Icon.png
+Marco Polo|thumb/5/58/Marco_Polo_Hero_Icon.png/270px-Marco_Polo_Hero_Icon.png
+Mayene|thumb/d/d2/Ji_Xiaoman_Hero_Icon.png/270px-Ji_Xiaoman_Hero_Icon.png
+Meng Ya|thumb/6/67/Meng_Ya_Hero_Icon.png/270px-Meng_Ya_Hero_Icon.png
+Mi Yue|thumb/7/7d/Mi_Yue_Hero_Icon.png/270px-Mi_Yue_Hero_Icon.png
+Milady|thumb/0/03/Milady_Hero_Icon.png/270px-Milady_Hero_Icon.png
+Ming|thumb/c/c4/Ming_Shiyin_Hero_Icon.png/270px-Ming_Shiyin_Hero_Icon.png
+Menki|thumb/6/68/Monki_2021_Hero_Icon.jpeg/270px-Monki_2021_Hero_Icon.jpeg
+Mozi|thumb/5/5f/Mozi_Hero_Icon.png/270px-Mozi_Hero_Icon.png
+Mulan|thumb/d/d4/Hua_Mulan_Hero_Icon.png/270px-Hua_Mulan_Hero_Icon.png
+Musashi|thumb/6/6c/Miyamoto_Musashi_Hero_Icon.png/270px-Miyamoto_Musashi_Hero_Icon.png
+Nakoruru|thumb/a/ab/Nakoruru_Hero_Icon.png/270px-Nakoruru_Hero_Icon.png
+Nezha|thumb/d/d7/Nezha_Hero_Icon.png/270px-Nezha_Hero_Icon.png
+Nuwa|thumb/0/03/Nuwa_Hero_Icon.png/270px-Nuwa_Hero_Icon.png
+Pei|thumb/1/16/Pei_Qin_Hu_Hero_Icon.png/270px-Pei_Qin_Hu_Hero_Icon.png
+Shangguan Wan'er|thumb/0/0a/Shangguan_Wan%27er_Hero_Icon.png/270px-Shangguan_Wan%27er_Hero_Icon.png
+Shi|thumb/0/0d/Xishi_Hero_Icon.jpg/270px-Xishi_Hero_Icon.jpg
+Shouyue|thumb/9/9c/BaiLi_ShouYue_Hero_Icon.png/270px-BaiLi_ShouYue_Hero_Icon.png
+Sima Yi|thumb/d/d9/Sima_Yi_Hero_Icon.png/270px-Sima_Yi_Hero_Icon.png
+Sun Bin|thumb/d/d9/Sun_Bin_Hero_Icon.png/270px-Sun_Bin_Hero_Icon.png
+Sun Ce|thumb/d/d9/Sun_Ce_Hero_Icon.png/270px-Sun_Ce_Hero_Icon.png
+Ukyo Tachibana|thumb/b/b3/Ukyo_Tachibana_Hero_Icon.png/270px-Ukyo_Tachibana_Hero_Icon.png
+Wang Wei|thumb/7/7c/Wang_Wei_Hero_Icon.jpg/270px-Wang_Wei_Hero_Icon.jpg
+Wang Zhaojun|thumb/1/1f/Wang_Zhaojun_Hero_Icon.png/270px-Wang_Zhaojun_Hero_Icon.png
+Wukong|thumb/6/6f/Sun_Wukong_Hero_Icon.png/270px-Sun_Wukong_Hero_Icon.png
+Xiang Yu|thumb/a/ac/Xiang_Yu_Hero_Icon.png/270px-Xiang_Yu_Hero_Icon.png
+Xiao Qiao|thumb/f/f9/Xiao_Qiao_Hero_Icon.png/270px-Xiao_Qiao_Hero_Icon.png
+Xuance|thumb/e/ef/BaiLi_XuanCe_Hero_Icon.png/270px-BaiLi_XuanCe_Hero_Icon.png
+Yang Jian|thumb/8/86/Yang_Jian_Hero_Icon.png/270px-Yang_Jian_Hero_Icon.png
+Yango|thumb/3/3b/Yuan_Ge_Hero_Icon.png/270px-Yuan_Ge_Hero_Icon.png
+Yao|thumb/4/4d/Yao_Male_Hero_Icon.png/270px-Yao_Male_Hero_Icon.png
+Yaria|thumb/d/d3/Yao_Hero_Icon.png/270px-Yao_Hero_Icon.png
+Yi Xing|thumb/b/bd/Yi_Xing_2022_Hero_Icon.png/270px-Yi_Xing_2022_Hero_Icon.png
+Ying|thumb/d/d8/Yun_Ying_Hero_Icon.png/270px-Yun_Ying_Hero_Icon.png
+Yuhuan|thumb/b/b9/Yang_Guifei_Hero_Icon.png/270px-Yang_Guifei_Hero_Icon.png
+Zhang Fei|thumb/9/9e/Zhang_Fei_Hero_Icon.png/270px-Zhang_Fei_Hero_Icon.png
+Liang|thumb/b/bd/Zhang_Liang_2019.jpg/270px-Zhang_Liang_2019.jpg
+Kui|thumb/b/b4/Zhong_Kui_Hero_Icon.png/270px-Zhong_Kui_Hero_Icon.png
+Wuyan|thumb/e/e2/Zhong_Wu_Yan_Hero_Icon.png/270px-Zhong_Wu_Yan_Hero_Icon.png
+Zhou Yu|thumb/4/4a/Zhou_Yu_Hero_Icon.png/270px-Zhou_Yu_Hero_Icon.png
+Zhuangzi|thumb/b/b0/Zhuang_Zhou_Hero_Icon.png/270px-Zhuang_Zhou_Hero_Icon.png
+Kongming|thumb/4/4e/Zhuge_Liang_Hero_Icon.png/270px-Zhuge_Liang_Hero_Icon.png
+Zilong|thumb/9/97/Zhao_Yun_Hero_Icon.png/270px-Zhao_Yun_Hero_Icon.png
+Annette|c/c2/Annette_Hero_Icon.png
+Florentino|5/59/Florentino_Hero_Icon.png
+Lorion|d/df/Lorion_Hero_Icon.jpg
+Arli|thumb/5/5c/Gong_Sun_Li_Hero_Icon.png/270px-Gong_Sun_Li_Hero_Icon.png
+Chano|thumb/5/5d/Cang_Hero_Icon.jpg/270px-Cang_Hero_Icon.jpg
+Dyadia|thumb/b/be/Shao_Siyuan_Hero_Icon.jpg/270px-Shao_Siyuan_Hero_Icon.jpg
+Sakeer|thumb/b/b6/Sang_Qi_Hero_Icon.jpg/270px-Sang_Qi_Hero_Icon.jpg
+Umbrosa|thumb/d/d8/Shadow_Hero_Icon.jpg/270px-Shadow_Hero_Icon.jpg
+Dunshan|thumb/6/68/Dun_Shan_Hero_Icon.png/270px-Dun_Shan_Hero_Icon.png`.trim().split('\n').map(l=>{const i=l.indexOf('|');return{n:l.slice(0,i),u:IMG+l.slice(i+1)}});
+
+const $=id=>document.getElementById(id);
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const T_PLAYER=2000,T_TEAM=3000,T_HERO=4500;
+const USED=new Set();let S=null,timers=[],snd=true,ac=null;
+
+function tick(f=500,d=.04,v=.05){if(!snd)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+$('snd').onclick=()=>{snd=!snd;$('snd').textContent=' เสียง: '+(snd?'เปิด':'ปิด')};
+
+function names(){const n=+$('np').value;$('nb').textContent=n;const c=$('names'),old=[...c.querySelectorAll('.sel')].map(d=>[d.querySelector('input[type=text]').value,d.querySelector('input[type=checkbox]').checked]);c.innerHTML='';for(let i=0;i<n;i++){const d=document.createElement('label');d.className='sel';const k=document.createElement('input');k.type='checkbox';k.checked=old[i]?old[i][1]:true;const e=document.createElement('input');e.type='text';e.value=old[i]?old[i][0]:'ผู้เล่น '+(i+1);d.append(k,e);c.appendChild(d)}}
+$('np').oninput=names;names();
+
+function left(){$('hc').textContent=(HEROES.length-USED.size)+' / '+HEROES.length+' (ยังไม่ถูกสุ่ม)'}
+function freshPool(n){let p=HEROES.filter(h=>!USED.has(h.n));if(p.length<n){USED.clear();p=[...HEROES];alert('ฮีโร่เหลือไม่พอ จึงเริ่มรอบใหม่ทั้ง '+HEROES.length+' ตัว')}return p}
+function start(instant){
+  const pl=[...document.querySelectorAll('#names .sel')].filter(d=>d.querySelector('input[type=checkbox]').checked).map((d,i)=>d.querySelector('input[type=text]').value.trim()||'ผู้เล่น '+(i+1));
+  const useR=$('tr').checked,useB=$('tb').checked;
+  if(!pl.length){alert('กรุณาติ๊กเลือกผู้เล่นอย่างน้อย 1 คน');return}
+  if(!useR&&!useB){alert('กรุณาเลือกทีมอย่างน้อย 1 ทีม');return}
+  const n=pl.length,half=Math.floor(n/2);
+  let nr;
+  if(useR&&useB){const redExtra=Math.random()<.5;nr=n%2?(redExtra?half+1:half):half}else nr=useR?n:0;
+  const teams=shuf([...Array(nr).fill('R'),...Array(n-nr).fill('B')]);
+  const tset=useR&&useB?['R','B']:[useR?'R':'B'];
+  S={all:pl,tset,left:shuf(pl),teams,pool:shuf(freshPool(n)),res:[],busy:false,cur:null,max:{R:nr,B:n-nr}};
+  document.querySelector('.team.R').classList.toggle('hidden',!useR);document.querySelector('.team.B').classList.toggle('hidden',!useB);
+  document.querySelector('.sumteam.R').classList.toggle('hidden',!useR);document.querySelector('.sumteam.B').classList.toggle('hidden',!useB);
+  HEROES.forEach(h=>setImg(new Image(),h));
+  $('setup').classList.add('hidden');$('stage').classList.remove('hidden');
+  resetReels();side();
+  if(instant)finishAll();
+}
+function resetReels(){['r1','r2','r3'].forEach(r=>$(r).className='reel');$('v1').textContent='?';$('v2').textContent='?';$('v3').textContent='?';$('hi').classList.add('hidden');$('bar').style.width='0';$('phase').textContent='กดปุ่มเพื่อเริ่มสุ่ม'}
+function teamTxt(t){return t==='R'?'🔴 RED TEAM':'🔵 BLUE TEAM'}
+function pick(){const p=S.left.pop(),t=S.teams.pop(),h=S.pool.pop();USED.add(h.n);left();return{p,t,h}}
+function cands(h){const u=h.u,o=u.replace(/thumb\/(\w\/\w\w\/[^/]+)\/[^/]+$/,'$1');const px=x=>'https://wsrv.nl/?url='+encodeURIComponent(x);return[...new Set([u,o,px(u),px(o)])]}
+function setImg(img,h,fail){const c=cands(h);let k=0;img.referrerPolicy='no-referrer';img.onerror=()=>{k++;if(k<c.length)img.src=c[k];else fail&&fail()};img.src=c[0]}
+function showHero(h){const i=$('hi');i.classList.remove('hidden');setImg(i,h,()=>i.classList.add('hidden'));$('v3').textContent=h.n;$('v3').style.fontSize='1.8rem'}
+
+function rollNext(){
+  if(S.busy||!S.left.length)return;
+  S.busy=true;const c=S.cur=pick();
+  const poolP=[c.p,...S.left],poolT=[...new Set([c.t,...S.teams])];
+  $('next').disabled=true;resetReels();
+  ['r1','r2','r3'].forEach(r=>$(r).classList.add('spin'));
+  const t0=performance.now();
+  const iv=setInterval(()=>{
+    const e=performance.now()-t0;
+    $('bar').style.width=Math.min(100,e/T_HERO*100)+'%';
+    if(e<T_PLAYER){$('v1').textContent=rnd(poolP);$('phase').textContent='กำลังสุ่มผู้เล่น...'}
+    if(e<T_TEAM){const t=rnd(poolT);$('v2').textContent=teamTxt(t)}
+    if(e<T_HERO&&e>=T_TEAM-0){}
+    if(e<T_HERO){const h=rnd(HEROES);showHero(h)}
+    if(e<T_PLAYER||e<T_TEAM||e<T_HERO)tick(300+Math.random()*400,.03,.025);
+  },90);
+  timers.push(iv);
+  const stop=(ms,fn)=>timers.push(setTimeout(fn,ms));
+  stop(T_PLAYER,()=>{$('v1').textContent=c.p;$('r1').className='reel done';tick(700,.2,.1);$('phase').textContent='กำลังสุ่มฝั่งทีม...'});
+  stop(T_TEAM,()=>{$('v2').textContent=teamTxt(c.t);$('r2').className='reel done '+(c.t==='R'?'red':'blue');tick(800,.2,.1);$('phase').textContent='กำลังสุ่มฮีโร่...'});
+  stop(T_HERO,()=>{clearInterval(iv);showHero(c.h);$('r3').className='reel done';$('bar').style.width='100%';tick(1046,.45,.12);commit()});
+}
+function commit(){
+  const c=S.cur;if(!c)return;S.res.push(c);S.cur=null;S.busy=false;timers.forEach(t=>{clearTimeout(t);clearInterval(t)});timers=[];
+  side(c);
+  const done=!S.left.length;
+  $('next').disabled=done;
+  $('phase').textContent=done?' สุ่มครบทุกคนแล้ว':'พร้อมสุ่มคนถัดไป';
+  $('next').textContent=done?' เสร็จสิ้น':' เริ่มสุ่มคนถัดไป';
+  if(done)scheduleSummary(2200);
+}
+function finishAll(){
+  timers.forEach(t=>{clearTimeout(t);clearInterval(t)});timers=[];
+  if(S.cur){const c=S.cur;$('v1').textContent=c.p;$('v2').textContent=teamTxt(c.t);showHero(c.h);commit()}
+  let last=null;
+  while(S.left.length){const c=pick();S.res.push(c);last=c}
+  S.busy=false;
+  if(last){$('v1').textContent=last.p;$('v2').textContent=teamTxt(last.t);showHero(last.h);
+    $('r1').className='reel done';$('r2').className='reel done '+(last.t==='R'?'red':'blue');$('r3').className='reel done'}
+  side();$('next').disabled=true;$('next').textContent=' เสร็จสิ้น';$('phase').textContent=' สุ่มครบทุกคนแล้ว!';$('bar').style.width='100%';tick(1046,.45,.12);scheduleSummary(700);
+}
+function side(newest){
+  const tot=S.all.length;$('prog').textContent=`ผู้เล่น ${S.res.length} / ${tot}`;
+  for(const t of['R','B']){
+    const box=$(t==='R'?'rl':'bl'),list=S.res.filter(r=>r.t===t);
+    $(t==='R'?'rc':'bc').textContent=`${list.length}/${S.max[t]}`;
+    box.innerHTML=list.length?'':'<div class="empty">ยังไม่มีผู้เล่น...</div>';
+    list.forEach(r=>{const d=document.createElement('div');d.className='it'+(r===newest?' new':'');
+      const im=document.createElement('img');im.alt='';setImg(im,r.h,()=>{im.style.visibility='hidden'});
+      const x=document.createElement('div');x.innerHTML='<b></b><span></span>';x.firstChild.textContent=r.h.n;x.lastChild.textContent=r.p;
+      d.append(im,x);box.appendChild(d)});
+  }
+}
+left();
+$('go').onclick=()=>start(false);
+$('goall').onclick=()=>start(true);
+$('next').onclick=rollNext;
+$('inst').onclick=()=>{if(S)finishAll()};
+$('back').onclick=()=>{clearTimeout(sumT);$('summary').classList.add('hidden');timers.forEach(t=>{clearTimeout(t);clearInterval(t)});timers=[];S=null;$('next').disabled=false;$('next').textContent=' เริ่มสุ่มคนถัดไป';$('stage').classList.add('hidden');$('setup').classList.remove('hidden')};
+let sumT=null;
+function showSummary(){
+  if(!S||S.left.length||S.busy)return;
+  for(const t of['R','B']){
+    const box=$(t==='R'?'sr':'sb'),list=S.res.filter(r=>r.t===t);box.innerHTML='';
+    $(t==='R'?'sr-n':'sb-n').textContent=list.length+' คน';
+    if(!list.length)box.innerHTML='<div class="empty">ไม่มีผู้เล่น</div>';
+    list.forEach((r,i)=>{const d=document.createElement('div');d.className='pc';d.style.animationDelay=i*.08+'s';
+      const im=document.createElement('img');im.alt=r.h.n;setImg(im,r.h,()=>{im.style.visibility='hidden'});
+      const b=document.createElement('b'),sp=document.createElement('span');b.textContent=r.h.n;sp.textContent=r.p;
+      sp.className='pn';d.append(im,sp,b);box.appendChild(d)});
+  }
+  $('stage').classList.add('hidden');$('summary').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'});
+}
+function scheduleSummary(ms){clearTimeout(sumT);sumT=setTimeout(showSummary,ms)}
+$('again').onclick=()=>$('back').onclick();
+$('copy').onclick=()=>{
+  const f=t=>S.res.filter(r=>r.t===t).map(r=>r.p+' — '+r.h.n).join('\n');
+  const txt='🔴 RED TEAM\n'+f('R')+'\n\n🔵 BLUE TEAM\n'+f('B');
+  const b=$('copy');const ok=()=>{b.textContent=' คัดลอกแล้ว';setTimeout(()=>b.textContent=' คัดลอกผลลัพธ์',1500)};
+  (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(ok).catch(()=>{const a=document.createElement('textarea');a.value=txt;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){}a.remove()});
+};
+</script>
+</body>
+</html>
